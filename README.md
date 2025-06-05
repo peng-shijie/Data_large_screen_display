@@ -1,23 +1,17 @@
----
-title: "Data Large Screen Display"
-author: "shijiepeng"
-date: "`r Sys.Date()`"
-output: github_document
----
-
 # 项目简介
 
-**Data_large_screen_display** 项目旨在通过结合 HTML 前端和 Python 后端，实现数据可视化和大屏展示效果。该项目适用于数据大屏展示、监控面板、实时数据监控等场景。
+**Data_large_screen_display** 项目旨在通过结合 HTML 前端和 Python 后端并结合BI工具，实现数据可视化和大屏展示效果。该项目适用于数据大屏展示、监控面板、实时数据监控等场景。
 
 ## 项目结构
 
-- `html/` 前端页面，使用 HTML/CSS/JavaScript 实现数据大屏的可视化展示。
-- `python/` 后端服务，负责数据的获取、处理与接口提供，支持与前端的数据交互。
+- `html/` 前端页面，使用 HTML/CSS/JavaScript 实现数据录入功能，为用户提供数据录入页面。
+- `python/` 后端服务，负责数据的获取、处理与接口提供，将用户录入的数据存到数据库中。
+- `BI/` 数据大屏展示。
 - 其他文件和目录详见项目结构。
 
 ## 主要功能
 
-- 实时数据采集与展示
+- 实时数据采集/用户录入与展示
 - 多种可视化图表（如折线图、柱状图、饼图等）
 - 响应式页面布局，适配不同分辨率大屏
 - 支持自定义数据源和展示模板
@@ -31,8 +25,12 @@ pandas
 # 其他依赖请参考 requirements.txt
 ```
 
-```{r, eval=FALSE}
-# 若有 R 相关内容，可在此处补充
+```mysql
+mysql版本自行选择
+```
+
+```BI软件
+BI软件可以自行选择，这里我使用的是免费开源的DataEase
 ```
 
 ## 快速开始
@@ -49,7 +47,9 @@ pandas
    ```bash
    python app.py
    ```
-4. 打开前端页面，按说明访问本地服务。
+4. 安装mysql
+
+5. 安装dataease
 
 ## 项目截图
 
