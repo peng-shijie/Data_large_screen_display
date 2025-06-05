@@ -53,11 +53,11 @@ BI软件可以自行选择，这里我使用的是免费开源的DataEase
 
 ## 项目截图
 
-（可在此处插入项目效果截图或 GIF 演示）
+![质量日报 (2)](https://github.com/user-attachments/assets/4f8e1402-12dc-4222-a812-8c214343ddfb)
 
 ## 联系方式
 
-- 作者：shijiepeng
+- 作者：pengshijie
 - GitHub: [https://github.com/shijiepeng/Data_large_screen_display](https://github.com/shijiepeng/Data_large_screen_display)
 
 ---
