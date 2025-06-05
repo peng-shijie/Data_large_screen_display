@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>质量工作日报</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #eee;
+    }
+    .container {
+      background-color: rgb(242, 253, 223);
+      padding: 20px;
+      border-radius: 6px;
+    }
+    input, textarea {
+      height: 38px;
+      font-size: 14px;
+      resize: horizontal;
+      overflow: auto;
+    }
+    .table-responsive-scroll {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 400px;
+      border: 1px solid #dee2e6;
+      background-color: white;
+    }
+    th:nth-child(8), td:nth-child(8) {
+      width: 300px;
+    }
+    .btn-secondary, .btn-primary {
+      background-color: rgb(17, 169, 131);
+      border-color: rgb(17, 169, 131);
+    }
+    .btn-secondary:hover, .btn-primary:hover {
+      background-color: rgb(15, 152, 117);
+      border-color: rgb(15, 152, 117);
+    }
+  </style>
+</head>
+<body class="p-4">
+  <div class="container">
+    <h2 class="mb-4 text-center">重庆顺多利机车有限责任公司<br>质量工作日报</h2>
+
+    <div class="mb-3">
+      <label class="form-label">日期</label>
+      <input type="date" class="form-control" id="report-date">
+    </div>
+
+    <h4>一、主要综合指标达成情况</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>项目类别</th>
+          <th>毛坯不良率</th>
+          <th>机加料废率</th>
+          <th>机加工废率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>内部质量指标</td>
+            <td><input type="text" id="internalDefectRate" class="form-control" step="any" oninput="addPercentSymbol(this)"></td>
+            <td><input type="text" id="machineMaterialWasteRate" class="form-control" step="any" oninput="addPercentSymbol(this)"></td>
+            <td><input type="text" id="machiningWasteRate" class="form-control" step="any" oninput="addPercentSymbol(this)"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>项目类别</th>
+          <th>机加不良率</th>
+          <th>综合泄漏率</th>
+          <th>客户投诉（官方）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>客户质量指标</td>
+            <td><input type="text" id="machineDefectRate" class="form-control" step="any" oninput="addPercentSymbol(this)"></td>
+            <td><input type="text" id="comprehensiveLeakageRate" class="form-control" step="any" oninput="addPercentSymbol(this)"></td>
+          <td><input type="number" min="0" step="1" id="customerComplaintsOfficial" class="form-control" oninput="validateIntegerInput(this)"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>二、重点质量问题处理情况</h4>
+    <div class="table-responsive-scroll mb-2">
+      <table class="table table-bordered" id="quality-issues-table">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>质量类型</th>
+            <th>产品名称</th>
+            <th>不良类型</th>
+            <th>投入数量</th>
+            <th>不良数量</th>
+            <th>不良率</th>
+            <th>问题描述及处理情况</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 动态添加行 -->
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-sm btn-secondary mb-4" onclick="addQualityIssueRow()">➕ 添加质量问题</button>
+    <button class="btn btn-sm btn-secondary mb-4" onclick="deleteLastQualityIssueRow()">➖ 删除质量问题</button>
+    <h4>三、当日新增客户投诉</h4>
+    <div class="table-responsive-scroll mb-2">
+      <table class="table table-bordered" id="customer-complaints-table">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>客户名称</th>
+            <th>投诉问题描述</th>
+            <th>处理情况</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 动态添加行 -->
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-sm btn-secondary mb-4" onclick="addComplaintRow()">➕ 添加客户投诉</button>
+    <button class="btn btn-sm btn-secondary mb-4" onclick="deleteLastComplaintRow()">➖ 删除客户投诉</button>
+
+    <div class="text-center">
+      <button class="btn btn-primary" id="submit-btn" onclick="submitReport()">提交日报</button>
+    </div>
+  </div>
+
+  <script>
+ document.getElementById("report-date").valueAsDate = new Date();
+
+  function addPercentSymbol(input) {
+    let value = input.value.trim();
+
+    // 只保留数字和小数点
+    value = value.replace(/[^0-9.]/g, '');  // 过滤掉非数字字符
+
+    // 如果值不为空且不以百分号结尾，则添加百分号
+    if (value !== '' && !value.includes('%')) {
+      input.value = value + '%';
+    } else {
+      input.value = value;  // 保持纯数字或空值
+    }
+  }
+
+    function validateIntegerInput(input) {
+    let value = input.value.trim();
+
+    // 如果输入不为空且不是整数，清除输入
+    if (value && !Number.isInteger(Number(value))) {
+      input.value = value.replace(/[^0-9]/g, '');  // 仅保留数字
+    }
+  }
+
+let qualityIssueIndex = 0;
+let complaintIndex = 0;
+
+function updateDefectRate(row) {
+  const inputQtyInput = row.querySelector(".input-qty");
+  const defectQtyInput = row.querySelector(".defect-qty");
+  const defectRateInput = row.querySelector(".defect-rate");
+
+  const inputQty = parseFloat(inputQtyInput.value);
+  const defectQty = parseFloat(defectQtyInput.value);
+
+  if (!isNaN(inputQty) && !isNaN(defectQty) && inputQty > 0) {
+    defectRateInput.value = ((defectQty / inputQty) * 100).toFixed(2) + "%";
+  } else {
+    defectRateInput.value = "";
+  }
+}
+
+function addQualityIssueRow() {
+  qualityIssueIndex++;
+  const table = document.querySelector("#quality-issues-table tbody");
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${qualityIssueIndex}</td>
+    <td><input type="text" class="form-control"></td>
+    <td><input type="text" class="form-control"></td>
+    <td><input type="text" class="form-control"></td>
+    <td><input type="number" class="form-control input-qty" step="any"></td>
+    <td><input type="number" class="form-control defect-qty" step="any"></td>
+    <td><input type="text" class="form-control defect-rate" readonly></td>
+    <td><textarea class="form-control" rows="2"></textarea></td>
+    <td><input type="text" class="form-control"></td>
+  `;
+  table.appendChild(row);
+
+  row.querySelector(".input-qty").addEventListener("input", () => updateDefectRate(row));
+  row.querySelector(".defect-qty").addEventListener("input", () => updateDefectRate(row));
+}
+
+    function deleteLastQualityIssueRow() {
+      const table = document.querySelector("#quality-issues-table tbody");
+      if (table.rows.length > 0) {
+        table.deleteRow(table.rows.length - 1);
+        qualityIssueIndex--;
+      }
+    }
+
+function addComplaintRow() {
+  complaintIndex++;
+  const table = document.querySelector("#customer-complaints-table tbody");
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${complaintIndex}</td>
+    <td><input type="text" class="form-control"></td>
+    <td><textarea class="form-control" rows="2"></textarea></td>
+    <td><textarea class="form-control" rows="2"></textarea></td>
+    <td><input type="text" class="form-control"></td>
+  `;
+  table.appendChild(row);
+}
+
+    function deleteLastComplaintRow() {
+      const table = document.querySelector("#customer-complaints-table tbody");
+      if (table.rows.length > 0) {
+        table.deleteRow(table.rows.length - 1);
+        complaintIndex--;
+      }
+    }
+
+// 初始添加一行
+addQualityIssueRow();
+addComplaintRow();
+
+function validateReportData(reportData) {
+  // 检查日期
+  if (!reportData.date) {
+    alert("请填写日期！");
+    return false;
+  }
+
+  // 检查主要综合指标字段是否完整
+  const indicators = reportData.main_indicators;
+  if (
+    !indicators.internalDefectRate || 
+    !indicators.machineMaterialWasteRate || 
+    !indicators.machiningWasteRate || 
+    !indicators.machineDefectRate || 
+    !indicators.comprehensiveLeakageRate || 
+    !indicators.customerComplaintsOfficial
+  ) {
+    alert("请填写完整的主要综合指标信息！");
+    return false;
+  }
+
+  // 检查质量问题字段是否完整
+  for (const issue of reportData.quality_issues) {
+    if (!issue.qualityType || !issue.productName || !issue.defectType) {
+      alert("请填写完整的质量问题信息！");
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function submitReport() {
+  const submitBtn = document.getElementById("submit-btn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "提交中...";
+
+  const reportDate = document.getElementById("report-date").value;
+
+  const mainIndicators = {
+    internalDefectRate: document.getElementById("internalDefectRate").value,
+    machineMaterialWasteRate: document.getElementById("machineMaterialWasteRate").value,
+    machiningWasteRate: document.getElementById("machiningWasteRate").value,
+    machineDefectRate: document.getElementById("machineDefectRate").value,
+    comprehensiveLeakageRate: document.getElementById("comprehensiveLeakageRate").value,
+    customerComplaintsOfficial: document.getElementById("customerComplaintsOfficial").value
+  };
+
+  const qualityIssues = [];
+  document.querySelectorAll("#quality-issues-table tbody tr").forEach(row => {
+    const issue = {
+      qualityType: row.querySelector("td:nth-child(2) input").value,
+      productName: row.querySelector("td:nth-child(3) input").value,
+      defectType: row.querySelector("td:nth-child(4) input").value,
+      inputQty: row.querySelector("td:nth-child(5) input").value,
+      defectQty: row.querySelector("td:nth-child(6) input").value,
+      defectRate: row.querySelector("td:nth-child(7) input").value,
+      problemDescription: row.querySelector("td:nth-child(8) textarea").value,
+      remarks: row.querySelector("td:nth-child(9) input").value
+    };
+    qualityIssues.push(issue);
+  });
+
+  const customerComplaints = [];
+  document.querySelectorAll("#customer-complaints-table tbody tr").forEach(row => {
+    const complaint = {
+      customerName: row.querySelector("td:nth-child(2) input").value,
+      complaintDescription: row.querySelector("td:nth-child(3) textarea").value,
+      handlingStatus: row.querySelector("td:nth-child(4) textarea").value,
+      remarks: row.querySelector("td:nth-child(5) input").value
+    };
+    if (complaint.customerName || complaint.complaintDescription || complaint.handlingStatus || complaint.remarks) {
+      customerComplaints.push(complaint);
+    }
+  });
+
+  const reportData = {
+    date: reportDate,
+    main_indicators: mainIndicators,
+    quality_issues: qualityIssues,
+    customer_complaints: customerComplaints
+  };
+
+  if (!validateReportData(reportData)) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "提交日报";
+    return;
+  }
+
+  fetch('/submit_report', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(reportData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    alert(data.message || "日报提交成功！");
+  })
+  .catch(error => {
+    alert("提交失败，请稍后重试！");
+    console.error('Error:', error);
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "提交日报";
+  });
+}
+  </script>
+</body>
+</html>

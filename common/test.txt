@@ -1,0 +1,38 @@
+CREATE TABLE reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE NOT NULL,
+    internal_defect_rate DECIMAL(5,2),                 -- 坯不良率，例如 3.25 表示 3.25%
+    machine_material_waste_rate DECIMAL(5,2),          -- 机加料废率
+    machining_waste_rate DECIMAL(5,2),                 -- 机加工废率
+    machine_defect_rate DECIMAL(5,2),                  -- 毛坯不良率
+    comprehensive_leakage_rate DECIMAL(5,2),           -- 机加料废率
+    customer_complaints_official INT,                  -- 客诉件数
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     -- 创建时间
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- 更新时间
+);
+
+CREATE TABLE quality_issues (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE NOT NULL,
+    quality_type VARCHAR(50) NOT NULL,                   -- 质量类型，例如 坯料质量问题
+    product_name VARCHAR(100) NOT NULL,                  -- 产品名称
+    defect_type VARCHAR(100) NOT NULL,                   -- 不良类型
+    input_qty INT NOT NULL,                              -- 投入数量
+    defect_qty INT NOT NULL,                             -- 不良数量  
+    defect_rate DECIMAL(5,2),                            -- 不良率，例如 5.67 表示 5.67%
+    problem_description TEXT,                            -- 问题描述
+    remarks VARCHAR(200),                                -- 备注
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,       -- 创建时间
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- 更新时间
+);
+
+CREATE TABLE customer_complaints (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE NOT NULL,
+    customer_name VARCHAR(100),                            -- 客户名称
+    complaint_description TEXT,                            -- 投诉问题描述
+    handling_status TEXT,                                  -- 处理情况
+    remarks VARCHAR(200),                                  -- 备注
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,         -- 创建时间
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- 更新时间
+);
